@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+:root {
+  font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  color: #111827;
+  background: #f3f6fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: #f3f6fb;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.safe-bottom {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.form-input {
+  width: 100%;
+  min-width: 0;
+  border-radius: 0.875rem;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: 0 1rem;
+  height: 3rem;
+  color: #111827;
+  font-size: 0.875rem;
+  font-weight: 600;
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+.form-input:focus {
+  border-color: #bfdbfe;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px #eff6ff;
+}
+
+.form-textarea {
+  height: auto;
+  min-height: 9rem;
+  padding: 1rem;
+  line-height: 1.5rem;
+  resize: none;
+}
