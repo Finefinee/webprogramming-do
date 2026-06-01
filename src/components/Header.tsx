@@ -1,10 +1,4 @@
-import {
-  BarChart3,
-  Bell,
-  MessageCircle,
-  PlusCircle,
-  UserRound,
-} from 'lucide-react'
+import { Bell, MessageCircle, PlusCircle, UserRound } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link, NavLink } from 'react-router'
 
@@ -15,7 +9,6 @@ interface HeaderProps {
 }
 
 const headerLinks = [
-  { to: '/dashboard', label: '순위', icon: BarChart3 },
   { to: '/chat', label: '채팅', icon: MessageCircle },
   { to: '/sell', label: '판매', icon: PlusCircle },
   { to: '/mypage', label: '마이', icon: UserRound },

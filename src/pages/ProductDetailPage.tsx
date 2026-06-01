@@ -12,7 +12,6 @@ import { Header } from '../components/Header'
 import { ImagePlaceholder } from '../components/ImagePlaceholder'
 import { StatusBadge } from '../components/StatusBadge'
 import { useProductsContext } from '../hooks/useProductsContext'
-import { getClassGroupLabel } from '../lib/classGroups'
 import { formatDate, formatPrice } from '../lib/user'
 
 export const ProductDetailPage = () => {
@@ -86,12 +85,6 @@ export const ProductDetailPage = () => {
                 <StatusBadge label={product.status} />
                 <StatusBadge label={product.condition} tone="gray" />
                 <StatusBadge label={product.category} tone="green" />
-                {product.category === '무료나눔' && product.classGroup ? (
-                  <StatusBadge
-                    label={`${getClassGroupLabel(product.classGroup)} 점수`}
-                    tone="blue"
-                  />
-                ) : null}
               </div>
               <h1 className="text-3xl font-black leading-tight tracking-normal text-gray-950">
                 {product.title}
