@@ -1,6 +1,6 @@
 import { ArrowLeft, Send } from 'lucide-react'
 import { useState } from 'react'
-import type { FormEvent } from 'react'
+import type { SyntheticEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { Button } from '../components/Button'
 import { EmptyState } from '../components/EmptyState'
@@ -30,7 +30,9 @@ export const ChatDetailPage = () => {
   const [messageText, setMessageText] = useState('')
   const sellerNickname = product?.seller.nickname.replace(/^DSM\b/, 'DGSW')
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (
+    event: SyntheticEvent<HTMLFormElement, SubmitEvent>,
+  ) => {
     event.preventDefault()
 
     const trimmedText = messageText.trim()
