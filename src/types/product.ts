@@ -13,6 +13,8 @@ export const PRODUCT_CATEGORIES = CATEGORIES.filter(
 ) as ProductCategory[]
 
 export const CONDITIONS = ['새 상품', '거의 새 것', '사용감 있음'] as const
+export const GRADES = ['1', '2', '3'] as const
+export const CLASS_NUMBERS = ['1', '2', '3', '4'] as const
 
 export const LOCATIONS = [
   '실습동 1층',
@@ -30,6 +32,13 @@ export type Category = (typeof CATEGORIES)[number]
 export type ProductCategory = Exclude<Category, '전체'>
 export type ProductCondition = (typeof CONDITIONS)[number]
 export type ProductStatus = '판매중' | '예약중' | '거래완료'
+export type Grade = (typeof GRADES)[number]
+export type ClassNumber = (typeof CLASS_NUMBERS)[number]
+
+export interface ClassGroup {
+  grade: Grade
+  classNumber: ClassNumber
+}
 
 export interface Seller {
   id: string
@@ -53,6 +62,7 @@ export interface Product {
   createdAt: string
   likes: number
   chats: number
+  classGroup?: ClassGroup
 }
 
 export interface ProductFormValues {
@@ -65,4 +75,6 @@ export interface ProductFormValues {
   availableTime: string
   description: string
   images: string[]
+  grade: '' | Grade
+  classNumber: '' | ClassNumber
 }

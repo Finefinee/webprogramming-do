@@ -1,13 +1,15 @@
 import { Camera, Check, ChevronDown, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import type { ChangeEvent, FormEvent, ReactNode } from 'react'
+import type { ChangeEvent, ReactNode, SyntheticEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { Button } from '../components/Button'
 import { Header } from '../components/Header'
 import { useProductsContext } from '../hooks/useProductsContext'
 import { currentUser } from '../lib/user'
 import {
+  CLASS_NUMBERS,
   CONDITIONS,
+  GRADES,
   LOCATIONS,
   PRODUCT_CATEGORIES,
   type Product,
@@ -24,6 +26,8 @@ const initialFormValues: ProductFormValues = {
   availableTime: '',
   description: '',
   images: [],
+  grade: '',
+  classNumber: '',
 }
 
 const MAX_PRODUCT_IMAGES = 10
@@ -50,13 +54,22 @@ export const SellPage = () => {
 
     return formValues.location
   }, [formValues.customLocation, formValues.location])
+  const isFreeSharing = formValues.category === '무료나눔'
 
   const updateField = <T extends keyof ProductFormValues>(
     field: T,
     value: ProductFormValues[T],
   ) => {
     setFormValues((currentValues) => ({ ...currentValues, [field]: value }))
-    setErrors((currentErrors) => ({ ...currentErrors, [field]: '' }))
+    setErrors((currentErrors) => ({
+      ...currentErrors,
+      [field]: '',
+      price: field === 'category' ? '' : currentErrors.price,
+      classGroup:
+        field === 'category' || field === 'grade' || field === 'classNumber'
+          ? ''
+          : currentErrors.classGroup,
+    }))
   }
 
   const handleImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -87,14 +100,21 @@ export const SellPage = () => {
       nextErrors.title = '상품명을 입력해주세요'
     }
 
-    if (!formValues.price.trim()) {
+    if (!isFreeSharing && !formValues.price.trim()) {
       nextErrors.price = '가격을 입력해주세요'
-    } else if (Number.isNaN(Number(formValues.price)) || Number(formValues.price) < 0) {
+    } else if (
+      !isFreeSharing &&
+      (Number.isNaN(Number(formValues.price)) || Number(formValues.price) < 0)
+    ) {
       nextErrors.price = '가격은 0 이상의 숫자로 입력해주세요'
     }
 
     if (!formValues.category) {
       nextErrors.category = '카테고리를 선택해주세요'
+    }
+
+    if (isFreeSharing && (!formValues.grade || !formValues.classNumber)) {
+      nextErrors.classGroup = '무료나눔 점수를 받을 학년과 반을 선택해주세요'
     }
 
     if (!formValues.location || !selectedLocation) {
@@ -109,7 +129,9 @@ export const SellPage = () => {
     return Object.keys(nextErrors).length === 0
   }
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (
+    event: SyntheticEvent<HTMLFormElement, SubmitEvent>,
+  ) => {
     event.preventDefault()
 
     if (!validate() || !formValues.category || !formValues.condition) {
@@ -119,7 +141,7 @@ export const SellPage = () => {
     const product: Product = {
       id: crypto.randomUUID(),
       title: formValues.title.trim(),
-      price: Number(formValues.price),
+      price: isFreeSharing ? 0 : Number(formValues.price),
       category: formValues.category,
       status: '판매중',
       condition: formValues.condition,
@@ -132,6 +154,12 @@ export const SellPage = () => {
       createdAt: new Date().toISOString(),
       likes: 0,
       chats: 0,
+      classGroup: isFreeSharing && formValues.grade && formValues.classNumber
+        ? {
+            grade: formValues.grade,
+            classNumber: formValues.classNumber,
+          }
+        : undefined,
     }
 
     addProduct(product)
@@ -140,7 +168,7 @@ export const SellPage = () => {
 
   return (
     <>
-      <Header title="판매 등록" />
+      <Header title="대소마켓" />
 
       <form onSubmit={handleSubmit} className="space-y-6 px-5 py-5">
         <section>
@@ -218,15 +246,24 @@ export const SellPage = () => {
 
           <Field label="가격" error={errors.price}>
             <input
-              value={formValues.price}
+              value={isFreeSharing ? '0' : formValues.price}
               onChange={(event) =>
                 updateField('price', event.target.value.replace(/\D/g, ''))
               }
+              disabled={isFreeSharing}
               inputMode="numeric"
               pattern="[0-9]*"
               placeholder="0"
-              className="form-input"
+              className={[
+                'form-input',
+                isFreeSharing ? 'text-gray-400 opacity-80' : '',
+              ].join(' ')}
             />
+            {isFreeSharing ? (
+              <span className="mt-2 block text-xs font-bold text-emerald-700">
+                무료나눔은 0원으로 등록됩니다
+              </span>
+            ) : null}
           </Field>
 
           <Field label="카테고리" error={errors.category}>
@@ -242,6 +279,59 @@ export const SellPage = () => {
               ))}
             </div>
           </Field>
+
+          {isFreeSharing ? (
+            <Field label="무료나눔 점수 반영 반" error={errors.classGroup}>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="relative">
+                  <select
+                    value={formValues.grade}
+                    onChange={(event) =>
+                      updateField(
+                        'grade',
+                        event.target.value as ProductFormValues['grade'],
+                      )
+                    }
+                    className="form-input appearance-none pr-11"
+                  >
+                    <option value="">학년 선택</option>
+                    {GRADES.map((grade) => (
+                      <option key={grade} value={grade}>
+                        {grade}학년
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={18}
+                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
+                </div>
+                <div className="relative">
+                  <select
+                    value={formValues.classNumber}
+                    onChange={(event) =>
+                      updateField(
+                        'classNumber',
+                        event.target.value as ProductFormValues['classNumber'],
+                      )
+                    }
+                    className="form-input appearance-none pr-11"
+                  >
+                    <option value="">반 선택</option>
+                    {CLASS_NUMBERS.map((classNumber) => (
+                      <option key={classNumber} value={classNumber}>
+                        {classNumber}반
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={18}
+                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
+                </div>
+              </div>
+            </Field>
+          ) : null}
 
           <Field label="상품 상태">
             <div className="grid grid-cols-3 gap-2">

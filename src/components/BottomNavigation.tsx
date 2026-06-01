@@ -1,8 +1,15 @@
-import { Home, MessageCircle, PlusCircle, UserRound } from 'lucide-react'
+import {
+  BarChart3,
+  Home,
+  MessageCircle,
+  PlusCircle,
+  UserRound,
+} from 'lucide-react'
 import { NavLink } from 'react-router'
 
 const tabs = [
   { to: '/', label: '홈', icon: Home },
+  { to: '/dashboard', label: '순위', icon: BarChart3 },
   { to: '/chat', label: '채팅', icon: MessageCircle },
   { to: '/sell', label: '판매', icon: PlusCircle },
   { to: '/mypage', label: '마이', icon: UserRound },
@@ -10,7 +17,7 @@ const tabs = [
 
 export const BottomNavigation = () => (
   <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-gray-100 bg-white/95 px-3 pt-2 backdrop-blur">
-    <div className="grid grid-cols-4 gap-1">
+    <div className="grid grid-cols-5 gap-1">
       {tabs.map(({ to, label, icon: Icon }) => (
         <NavLink
           key={to}

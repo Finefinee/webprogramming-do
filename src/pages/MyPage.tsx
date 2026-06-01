@@ -6,13 +6,15 @@ import {
   Settings,
   ShieldCheck,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { EmptyState } from '../components/EmptyState'
 import { Header } from '../components/Header'
 import { ProductCard } from '../components/ProductCard'
 import { ProfileCard } from '../components/ProfileCard'
+import { SearchBar } from '../components/SearchBar'
 import { useProductsContext } from '../hooks/useProductsContext'
 import { currentUser } from '../lib/user'
+import type { Product } from '../types/product'
 
 const menus = [
   { label: '학교 인증 정보', icon: ShieldCheck },
@@ -23,11 +25,27 @@ const menus = [
 
 export const MyPage = () => {
   const { products, likedProductIds, likedProducts } = useProductsContext()
+  const [searchTerm, setSearchTerm] = useState('')
   const [notice, setNotice] = useState('')
+  const normalizedTerm = searchTerm.trim().toLowerCase()
 
-  const myProducts = products.filter(
-    (product) => product.seller.id === currentUser.id,
+  const myProducts = useMemo(
+    () => products.filter((product) => product.seller.id === currentUser.id),
+    [products],
   )
+  const filteredMyProducts = useMemo(
+    () =>
+      myProducts.filter((product) => matchesProductSearch(product, searchTerm)),
+    [myProducts, searchTerm],
+  )
+  const filteredLikedProducts = useMemo(
+    () =>
+      likedProducts.filter((product) =>
+        matchesProductSearch(product, searchTerm),
+      ),
+    [likedProducts, searchTerm],
+  )
+  const isSearching = normalizedTerm.length > 0
 
   const handleMenuClick = (label: string) => {
     setNotice(`${label} 기능은 준비 중입니다.`)
@@ -36,7 +54,13 @@ export const MyPage = () => {
 
   return (
     <>
-      <Header title="마이페이지" />
+      <Header title="대소마켓">
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="내 상품, 찜한 상품 검색"
+        />
+      </Header>
       <div className="space-y-6 px-5 py-5">
         <ProfileCard />
 
@@ -47,10 +71,13 @@ export const MyPage = () => {
         ) : null}
 
         <section>
-          <SectionTitle title="내가 등록한 상품" count={myProducts.length} />
-          {myProducts.length > 0 ? (
+          <SectionTitle
+            title="내가 등록한 상품"
+            count={filteredMyProducts.length}
+          />
+          {filteredMyProducts.length > 0 ? (
             <div className="rounded-3xl border border-gray-100 px-4">
-              {myProducts.map((product) => (
+              {filteredMyProducts.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}
@@ -60,24 +87,32 @@ export const MyPage = () => {
             </div>
           ) : (
             <EmptyState
-              title="등록한 상품이 없어요"
-              description="기숙사와 교실에서 쓰지 않는 물건을 올려보세요"
+              title={isSearching ? '검색 결과가 없어요' : '등록한 상품이 없어요'}
+              description={
+                isSearching
+                  ? '내가 등록한 상품에서 다른 검색어로 찾아보세요'
+                  : '기숙사와 교실에서 쓰지 않는 물건을 올려보세요'
+              }
             />
           )}
         </section>
 
         <section>
-          <SectionTitle title="찜한 상품" count={likedProducts.length} />
-          {likedProducts.length > 0 ? (
+          <SectionTitle title="찜한 상품" count={filteredLikedProducts.length} />
+          {filteredLikedProducts.length > 0 ? (
             <div className="rounded-3xl border border-gray-100 px-4">
-              {likedProducts.map((product) => (
+              {filteredLikedProducts.map((product) => (
                 <ProductCard key={product.id} product={product} isLiked />
               ))}
             </div>
           ) : (
             <EmptyState
-              title="찜한 상품이 없어요"
-              description="관심 있는 상품을 찜하면 여기에서 모아볼 수 있어요"
+              title={isSearching ? '검색 결과가 없어요' : '찜한 상품이 없어요'}
+              description={
+                isSearching
+                  ? '찜한 상품에서 다른 검색어로 찾아보세요'
+                  : '관심 있는 상품을 찜하면 여기에서 모아볼 수 있어요'
+              }
             />
           )}
         </section>
@@ -117,6 +152,25 @@ export const MyPage = () => {
       </div>
     </>
   )
+}
+
+const matchesProductSearch = (product: Product, searchTerm: string) => {
+  const normalizedTerm = searchTerm.trim().toLowerCase()
+
+  if (!normalizedTerm) {
+    return true
+  }
+
+  return [
+    product.title,
+    product.category,
+    product.location,
+    product.description,
+    product.seller.nickname,
+  ]
+    .join(' ')
+    .toLowerCase()
+    .includes(normalizedTerm)
 }
 
 interface SectionTitleProps {
