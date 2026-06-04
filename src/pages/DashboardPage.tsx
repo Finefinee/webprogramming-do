@@ -1,10 +1,10 @@
 import { Gift, Medal, Trophy } from 'lucide-react'
 import { Header } from '../components/Header'
-import { useProductsContext } from '../hooks/useProductsContext'
 import { getFreeSharingRankings } from '../lib/classGroups'
+import { useProductStore } from '../store/useProductStore'
 
 export const DashboardPage = () => {
-  const { products } = useProductsContext()
+  const products = useProductStore((state) => state.products)
   const rankings = getFreeSharingRankings(products)
   const totalFreeSharings = rankings.reduce(
     (total, ranking) => total + ranking.count,

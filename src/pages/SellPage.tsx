@@ -4,8 +4,8 @@ import type { ChangeEvent, ReactNode, SyntheticEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { Button } from '../components/Button'
 import { Header } from '../components/Header'
-import { useProductsContext } from '../hooks/useProductsContext'
 import { currentUser } from '../lib/user'
+import { useProductStore } from '../store/useProductStore'
 import {
   CLASS_NUMBERS,
   CONDITIONS,
@@ -42,7 +42,7 @@ const readImageAsDataUrl = (file: File) =>
 
 export const SellPage = () => {
   const navigate = useNavigate()
-  const { addProduct } = useProductsContext()
+  const addProduct = useProductStore((state) => state.addProduct)
   const [formValues, setFormValues] =
     useState<ProductFormValues>(initialFormValues)
   const [errors, setErrors] = useState<Record<string, string>>({})

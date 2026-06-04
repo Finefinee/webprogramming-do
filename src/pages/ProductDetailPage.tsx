@@ -11,14 +11,16 @@ import { EmptyState } from '../components/EmptyState'
 import { Header } from '../components/Header'
 import { ImagePlaceholder } from '../components/ImagePlaceholder'
 import { StatusBadge } from '../components/StatusBadge'
-import { useProductsContext } from '../hooks/useProductsContext'
 import { getClassGroupLabel } from '../lib/classGroups'
 import { formatDate, formatPrice } from '../lib/user'
+import { useProductStore } from '../store/useProductStore'
 
 export const ProductDetailPage = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { getProduct, likedProductIds, toggleLike } = useProductsContext()
+  const getProduct = useProductStore((state) => state.getProduct)
+  const likedProductIds = useProductStore((state) => state.likedProductIds)
+  const toggleLike = useProductStore((state) => state.toggleLike)
   const product = getProduct(id)
 
   if (!product) {

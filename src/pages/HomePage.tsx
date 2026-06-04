@@ -7,11 +7,12 @@ import { EmptyState } from '../components/EmptyState'
 import { Header } from '../components/Header'
 import { ProductCard } from '../components/ProductCard'
 import { SearchBar } from '../components/SearchBar'
-import { useProductsContext } from '../hooks/useProductsContext'
+import { useProductStore } from '../store/useProductStore'
 import type { Category } from '../types/product'
 
 export const HomePage = () => {
-  const { products, likedProductIds } = useProductsContext()
+  const products = useProductStore((state) => state.products)
+  const likedProductIds = useProductStore((state) => state.likedProductIds)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<Category>('전체')
 

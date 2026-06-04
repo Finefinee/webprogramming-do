@@ -12,8 +12,8 @@ import { Header } from '../components/Header'
 import { ProductCard } from '../components/ProductCard'
 import { ProfileCard } from '../components/ProfileCard'
 import { SearchBar } from '../components/SearchBar'
-import { useProductsContext } from '../hooks/useProductsContext'
 import { currentUser } from '../lib/user'
+import { useProductStore } from '../store/useProductStore'
 import type { Product } from '../types/product'
 
 const menus = [
@@ -24,7 +24,8 @@ const menus = [
 ]
 
 export const MyPage = () => {
-  const { products, likedProductIds, likedProducts } = useProductsContext()
+  const products = useProductStore((state) => state.products)
+  const likedProductIds = useProductStore((state) => state.likedProductIds)
   const [searchTerm, setSearchTerm] = useState('')
   const [notice, setNotice] = useState('')
   const normalizedTerm = searchTerm.trim().toLowerCase()
@@ -37,6 +38,11 @@ export const MyPage = () => {
     () =>
       myProducts.filter((product) => matchesProductSearch(product, searchTerm)),
     [myProducts, searchTerm],
+  )
+  const likedProducts = useMemo(
+    () =>
+      products.filter((product) => likedProductIds.includes(product.id)),
+    [likedProductIds, products],
   )
   const filteredLikedProducts = useMemo(
     () =>

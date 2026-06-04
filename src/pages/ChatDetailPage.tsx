@@ -6,8 +6,8 @@ import { Button } from '../components/Button'
 import { EmptyState } from '../components/EmptyState'
 import { Header } from '../components/Header'
 import { ImagePlaceholder } from '../components/ImagePlaceholder'
-import { useProductsContext } from '../hooks/useProductsContext'
 import { formatPrice } from '../lib/user'
+import { useProductStore } from '../store/useProductStore'
 
 interface Message {
   id: string
@@ -18,7 +18,7 @@ interface Message {
 export const ChatDetailPage = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { getProduct } = useProductsContext()
+  const getProduct = useProductStore((state) => state.getProduct)
   const product = getProduct(id)
   const [messages, setMessages] = useState<Message[]>([
     {

@@ -1,7 +1,7 @@
 import type { Seller } from '../types/product'
 
 export const currentUser: Seller = {
-  id: 'dsm-current-student',
+  id: 'ds-current-student',
   nickname: 'DGSW 9기 학생',
   verified: true,
 }
