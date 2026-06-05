@@ -54,9 +54,10 @@ export const Header = ({
             <NavLink
               key={to}
               to={to}
+              aria-label={label}
               className={({ isActive }) =>
                 [
-                  'flex h-10 items-center justify-center gap-1.5 rounded-full px-3 text-xs font-bold transition max-[430px]:w-10 max-[430px]:px-0',
+                  'flex h-10 items-center justify-center gap-1.5 rounded-full px-3 text-xs font-bold transition max-[521px]:w-10 max-[521px]:px-0',
                   isActive
                     ? 'bg-blue-50 text-blue-900'
                     : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900',
@@ -64,7 +65,9 @@ export const Header = ({
               }
             >
               <Icon size={18} strokeWidth={2.2} />
-              <span className="max-[430px]:hidden">{label}</span>
+              <span className="whitespace-nowrap max-[521px]:hidden">
+                {label}
+              </span>
             </NavLink>
           ))}
         </nav>
